@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 /* DATA */
 import { initialFriends } from './assets/data/friendsData';
+import Background from './assets/components/Background';
 
 const App = () => {
   const [friends, setFriends] = useState(initialFriends);
@@ -26,20 +27,41 @@ const App = () => {
     setShowAddFriend(false);
   }
 
-  return (
-    <div className="app">
-      <div className="sidebar">
-        <FriendList
-          friends={friends}
-          onSelectedFriends={handleSelectedFriend}
-          selectedFriend={selectedFriend}
-        />
-        {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
-        <Button onClick={handleShowAddFriend}>{showAddFriend ? 'Close' : 'Add Friend'}</Button>
-      </div>
+  function handleSplitBill(value) {
+    setFriends((friends) =>
+      friends.map((friend) =>
+        friend.id === selectedFriend.id
+          ? {
+              ...friend,
+              balance: friend.balance + value,
+            }
+          : friend
+      )
+    );
 
-      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
-    </div>
+    setSelectedFriend(null);
+  }
+
+  return (
+    <>
+      <h1>Eat and split the bill</h1>
+      <Background />
+      <div className="app">
+        <div className="sidebar">
+          <FriendList
+            friends={friends}
+            onSelectedFriends={handleSelectedFriend}
+            selectedFriend={selectedFriend}
+          />
+          {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
+          <Button onClick={handleShowAddFriend}>{showAddFriend ? 'Close' : 'Add Friend'}</Button>
+        </div>
+
+        {selectedFriend && (
+          <FormSplitBill selectedFriend={selectedFriend} onSplitBill={handleSplitBill} />
+        )}
+      </div>
+    </>
   );
 };
 
